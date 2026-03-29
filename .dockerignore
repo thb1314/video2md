@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+__pycache__
+.pytest_cache
+.mypy_cache
+.ruff_cache
+output
+input
+*.mp4
+*.mkv
+*.mov
+*.avi
+*.webm
+*.m4v

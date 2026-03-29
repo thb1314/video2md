@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Local runtime data
+input/
+video/
+output/
+output_*/
+output_history/
+run_gpu.yaml
+*.log
+
+# Generated media / artifacts
+*.wav
+*.mp3
+*.mp4
+*.mkv
+*.mov
+*.avi
+*.webm
+*.m4v
+
+# Secrets
+.env
+.env.*
+*.env
+apptoken.txt
+*.pem
+*.key
+*.crt
