@@ -108,20 +108,25 @@ docker compose --profile vlm run --rm video2md-qwen \
   --lecture-strong-chunk-chars 2200
 ```
 
-## 关键参数
-- `--mode auto|continuous|batch`
-- `--asr-backend faster-whisper|none`
-- `--asr-device auto|cpu|cuda`
-- `--asr-compute-type int8|float16|...`
-- `--asr-fallback-to-cpu` / `--no-asr-fallback-to-cpu`
-- `--ocr-backend none|rapidocr`
-- `--rapidocr-use-cuda`
-- `--vlm-backend none|openai|siliconflow`
-- `--vlm-model Qwen/Qwen3-VL-32B-Instruct`
-- `--lecture-refine-with-vlm` / `--no-lecture-refine-with-vlm`
-- `--lecture-strong-normalize-with-vlm` / `--no-lecture-strong-normalize-with-vlm`
-- `--lecture-strong-chunk-chars N`
-- `--term-override wrong=right`（可重复）
+## 关键参数（含中文说明）
+- `--input PATH`：输入视频文件或目录路径；目录可用于连续多视频模式。
+- `--output PATH`：输出目录，生成讲义、笔记、关键帧和中间产物。
+- `--mode auto|continuous|batch`：运行模式。`auto` 默认按连续模式处理；`continuous` 合并为一篇；`batch` 分视频输出。
+- `--asr-backend faster-whisper|none`：语音识别后端，`none` 表示关闭 ASR。
+- `--asr-model NAME`：ASR 模型规格（如 `tiny/small/medium`），越大通常越准但更慢。
+- `--asr-device auto|cpu|cuda`：ASR 推理设备选择。
+- `--asr-compute-type int8|float16|...`：ASR 数值精度类型，影响速度、显存和精度。
+- `--asr-fallback-to-cpu` / `--no-asr-fallback-to-cpu`：当请求设备初始化失败时是否自动回退 CPU（默认开启）。
+- `--ocr-backend none|rapidocr`：OCR 后端，`none` 表示不做文字识别。
+- `--rapidocr-use-cuda`：启用 RapidOCR 的 CUDAExecutionProvider（需 `onnxruntime-gpu`）。
+- `--mining-passes N`：多轮证据挖掘轮数（关键帧/OCR/VLM 迭代次数），值越大通常信息更全但耗时更高。
+- `--vlm-backend none|openai|siliconflow`：视觉大模型后端。
+- `--vlm-model MODEL_NAME`：VLM 模型名（默认 `Qwen/Qwen3-VL-32B-Instruct`）。
+- `--siliconflow-api-key-file PATH`：SiliconFlow 密钥文件路径（不使用环境变量时）。
+- `--lecture-refine-with-vlm` / `--no-lecture-refine-with-vlm`：是否启用 VLM 对讲义正文润色。
+- `--lecture-strong-normalize-with-vlm` / `--no-lecture-strong-normalize-with-vlm`：是否启用强规范化步骤（默认开启）。
+- `--lecture-strong-chunk-chars N`：强规范化分段字符数，控制单次请求上下文长度。
+- `--term-override wrong=right`：手动术语替换规则，可重复传入多个映射。
 
 当前默认 VLM：`Qwen/Qwen3-VL-32B-Instruct`  
 说明：`siliconflow` 是远端推理接口，VLM 本身不在本机 GPU 上执行。
@@ -145,17 +150,8 @@ output/
     evidence.db
 ```
 
-## 证据检索
-```bash
-docker compose run --rm video2md \
-  search-evidence --db /data/output/artifacts/evidence.db -q 注册资本
-```
 
 ## 常见问题
 - `CUDA driver version is insufficient`：当前环境无法用 CUDA，建议保留 `--asr-fallback-to-cpu`
 - `VLM network error / timed out`：检查代理、API key、网络连通性，可提高 `vlm_timeout_sec`
 - 输出目录权限是 `root`：容器加 `--user $(id -u):$(id -g)` 或后处理 `chown`
-
-## 开源前安全建议
-- 不要提交任何 `.env`、`apptoken.txt`、真实 API key
-- 已通过 `.gitignore` 忽略本地数据、输出目录、密钥文件与临时配置

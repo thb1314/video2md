@@ -109,20 +109,25 @@ docker compose --profile vlm run --rm video2md-qwen \
   --lecture-strong-chunk-chars 2200
 ```
 
-## Important CLI Flags
-- `--mode auto|continuous|batch`
-- `--asr-backend faster-whisper|none`
-- `--asr-device auto|cpu|cuda`
-- `--asr-compute-type int8|float16|...`
-- `--asr-fallback-to-cpu` / `--no-asr-fallback-to-cpu`
-- `--ocr-backend none|rapidocr`
-- `--rapidocr-use-cuda`
-- `--vlm-backend none|openai|siliconflow`
-- `--vlm-model Qwen/Qwen3-VL-32B-Instruct`
-- `--lecture-refine-with-vlm` / `--no-lecture-refine-with-vlm`
-- `--lecture-strong-normalize-with-vlm` / `--no-lecture-strong-normalize-with-vlm`
-- `--lecture-strong-chunk-chars N`
-- `--term-override wrong=right`
+## Important CLI Flags (Explained)
+- `--input PATH`: Input video file or directory path. A directory can be processed as a continuous timeline.
+- `--output PATH`: Output directory for lecture, notes, keyframes, and artifacts.
+- `--mode auto|continuous|batch`: Run mode. `auto` defaults to continuous behavior, `continuous` merges into one article, `batch` outputs per video.
+- `--asr-backend faster-whisper|none`: ASR backend. `none` disables speech transcription.
+- `--asr-model NAME`: ASR model size (for example `tiny/small/medium`), larger is usually more accurate but slower.
+- `--asr-device auto|cpu|cuda`: Device selection for ASR inference.
+- `--asr-compute-type int8|float16|...`: Numeric precision for ASR, affecting speed/VRAM/accuracy tradeoffs.
+- `--asr-fallback-to-cpu` / `--no-asr-fallback-to-cpu`: Whether to auto-fallback to CPU if requested device init fails (enabled by default).
+- `--ocr-backend none|rapidocr`: OCR backend. `none` disables OCR.
+- `--rapidocr-use-cuda`: Enable CUDAExecutionProvider for RapidOCR (`onnxruntime-gpu` required).
+- `--mining-passes N`: Number of iterative evidence-mining passes (keyframe/OCR/VLM); higher is usually richer but slower.
+- `--vlm-backend none|openai|siliconflow`: VLM backend.
+- `--vlm-model MODEL_NAME`: VLM model name (default `Qwen/Qwen3-VL-32B-Instruct`).
+- `--siliconflow-api-key-file PATH`: Path to SiliconFlow API key file when env vars are not used.
+- `--lecture-refine-with-vlm` / `--no-lecture-refine-with-vlm`: Toggle VLM-based lecture polishing.
+- `--lecture-strong-normalize-with-vlm` / `--no-lecture-strong-normalize-with-vlm`: Toggle strict normalization step (enabled by default).
+- `--lecture-strong-chunk-chars N`: Chunk size (characters) used in strict normalization.
+- `--term-override wrong=right`: Manual term replacement rule, repeatable.
 
 Default VLM model: `Qwen/Qwen3-VL-32B-Instruct`  
 Note: SiliconFlow VLM is a remote API, not local GPU inference.
